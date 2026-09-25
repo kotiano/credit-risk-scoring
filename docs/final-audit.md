@@ -82,7 +82,7 @@ point-estimate fairness metrics; no automated recalibration; DuckDB-specific SQL
 
 ## 5. Remaining technical debt
 
-- The dashboard (`dashboard/app.py`) is a single ~600-line script; splitting tabs into
+- The dashboard (`dashboard/app.py`) is a single ~1,100-line script; splitting tabs into
   modules would help as it grows. It is linted but not type-checked.
 - `evaluate.py` recomputes permutation importance for all three models (~40 s, mostly the
   400-tree random forest); caching or fewer repeats would speed iteration.
