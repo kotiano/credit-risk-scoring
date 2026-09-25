@@ -152,7 +152,7 @@ def default_cutoffs(con: duckdb.DuckDBPyConnection, n: int = 4) -> list[date]:
         "FROM features.loan_features GROUP BY 1 ORDER BY 1"
     ).df()
     df["bucket"] = pd.qcut(df["decision_date"].rank(method="first"), n, labels=False)
-    picks = df.sort_values("repeat_loans", ascending=False).groupby("bucket").head(1)
+    picks = df.sort_values("repeat_loans", ascending=False, kind="stable").groupby("bucket").head(1)
     return sorted(pd.to_datetime(picks["decision_date"]).dt.date.tolist())
 
 
@@ -172,6 +172,6 @@ def univariate_auc_screen(train: pd.DataFrame, target: str = "target") -> pd.Dat
                 "univariate_auc": float(max(auc, 1 - auc)),
             }
         )
-    out = pd.DataFrame(rows).sort_values("univariate_auc", ascending=False)
+    out = pd.DataFrame(rows).sort_values("univariate_auc", ascending=False, kind="stable")
     out["flag"] = np.where(out["univariate_auc"] > SUSPICIOUS_UNIVARIATE_AUC, "REVIEW", "ok")
     return out.reset_index(drop=True)

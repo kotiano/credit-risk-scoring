@@ -75,8 +75,8 @@ the source extract within tolerance and quarantined/flagged by the clean layer;
 | loans | non_positive_amount, total_due_not_reconciled | 2 |
 | repayments | orphan_loan_id | 13 |
 | repayments | non_positive_amount | 6 |
-| repayments | parent_loan_quarantined | 5 |
 | repayments | before_disbursement | 5 |
+| repayments | parent_loan_quarantined | 5 |
 | repayments | parent_loan_quarantined, before_disbursement | 1 |
 | transactions | missing_amount | 20 |
 | transactions | future_or_invalid_date | 10 |

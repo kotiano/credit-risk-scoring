@@ -30,7 +30,7 @@ def logistic_coefficients(model: Pipeline) -> pd.DataFrame:
     df = pd.DataFrame({"term": names, "coefficient": coefs})
     df["odds_ratio_per_sd"] = np.exp(df["coefficient"])
     df["abs_coefficient"] = df["coefficient"].abs()
-    return df.sort_values("abs_coefficient", ascending=False).reset_index(drop=True)
+    return df.sort_values("abs_coefficient", ascending=False, kind="stable").reset_index(drop=True)
 
 
 def permutation_importances(
@@ -57,14 +57,14 @@ def permutation_importances(
         }
     )
     df["group"] = df["feature"].map(FEATURE_GROUP)
-    return df.sort_values("auc_drop_mean", ascending=False).reset_index(drop=True)
+    return df.sort_values("auc_drop_mean", ascending=False, kind="stable").reset_index(drop=True)
 
 
 def impurity_importances(model: Pipeline) -> pd.DataFrame:
     names = model.named_steps["prep"].get_feature_names_out()
     return (
         pd.DataFrame({"term": names, "importance": model.named_steps["model"].feature_importances_})
-        .sort_values("importance", ascending=False)
+        .sort_values("importance", ascending=False, kind="stable")
         .reset_index(drop=True)
     )
 
@@ -93,4 +93,5 @@ def local_explanation(
         }
     )
     out["abs"] = out["pd_contribution"].abs()
-    return out.sort_values("abs", ascending=False).head(top_k).drop(columns="abs")
+    ranked = out.sort_values(["abs", "feature"], ascending=[False, True], kind="stable")
+    return ranked.head(top_k).drop(columns="abs")

@@ -207,7 +207,9 @@ def render_monitoring_report(
     settings: Settings,
 ) -> None:
     cfg = settings.monitoring
-    current = features[features["window"] == "current"].sort_values("psi", ascending=False)
+    current = features[features["window"] == "current"].sort_values(
+        "psi", ascending=False, kind="stable"
+    )
     flagged = current[current["status"] != "stable"]
     status_counts = current["status"].value_counts().to_dict()
     recent_perf = performance.set_index("window").loc["recent"]
@@ -247,7 +249,7 @@ def render_monitoring_report(
         "Top 10 features by PSI in each window:",
         "",
         df_to_markdown(
-            features.sort_values("psi", ascending=False)
+            features.sort_values("psi", ascending=False, kind="stable")
             .groupby("window")
             .head(10)[["window", "feature", "psi", "status"]]
         ),

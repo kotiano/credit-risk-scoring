@@ -74,6 +74,7 @@ def dpd_bucket_macro_sql(settings: Settings) -> str:
 
 def prepare_session(con: duckdb.DuckDBPyConnection, settings: Settings) -> None:
     """Create schemas, register variables and shared macros on a connection."""
+    con.execute(f"SET threads = {int(settings.duckdb_threads)}")
     for schema in SCHEMAS:
         con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
     set_variables(con, sql_variables(settings))

@@ -145,6 +145,9 @@ class Settings:
     modeling: ModelingConfig = field(default_factory=ModelingConfig)
     monitoring: MonitoringConfig = field(default_factory=MonitoringConfig)
     log_level: str = field(default_factory=lambda: os.getenv("CREDIT_RISK_LOG_LEVEL", "INFO"))
+    # Parallel floating-point aggregation is not bit-for-bit deterministic; one thread
+    # makes reruns reproduce the committed reports exactly (cost: a few seconds).
+    duckdb_threads: int = field(default_factory=lambda: _env_int("CREDIT_RISK_DUCKDB_THREADS", 1))
 
 
 def get_settings() -> Settings:

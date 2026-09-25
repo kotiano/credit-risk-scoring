@@ -8,4 +8,4 @@ SELECT
     count(*)                                AS loans
 FROM marts.loan_repayment_summary
 GROUP BY source_loan_status, loan_state
-ORDER BY is_match DESC, loans DESC;
+ORDER BY is_match DESC, loans DESC, source_loan_status, derived_loan_state;

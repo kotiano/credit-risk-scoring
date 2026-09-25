@@ -22,16 +22,16 @@
 | Random Forest | validation | 2,058 | 0.1288 | 0.1226 | 0.7662 | 0.5324 | 0.4340 | 0.3554 | 0.0985 | 0.9521 | 0.0216 |
 | Random Forest | test | 2,198 | 0.1442 | 0.1284 | 0.7788 | 0.5577 | 0.4170 | 0.3888 | 0.1067 | 0.8901 | 0.0274 |
 | Random Forest | recent | 863 | 0.1599 | 0.1387 | 0.7677 | 0.5354 | 0.4333 | 0.3509 | 0.1187 | 0.8672 | 0.0326 |
-| Hist Gradient Boosting | train | 8,813 | 0.1213 | 0.1213 | 0.8532 | 0.7065 | 0.5497 | 0.5088 | 0.0815 | 0.9997 | 0.0265 |
-| Hist Gradient Boosting | validation | 2,058 | 0.1288 | 0.1252 | 0.7644 | 0.5288 | 0.4160 | 0.3627 | 0.0982 | 0.9722 | 0.0174 |
-| Hist Gradient Boosting | test | 2,198 | 0.1442 | 0.1314 | 0.7817 | 0.5634 | 0.4360 | 0.3823 | 0.1061 | 0.9109 | 0.0211 |
-| Hist Gradient Boosting | recent | 863 | 0.1599 | 0.1389 | 0.7706 | 0.5411 | 0.4311 | 0.3768 | 0.1179 | 0.8689 | 0.0309 |
+| Hist Gradient Boosting | train | 8,813 | 0.1213 | 0.1212 | 0.8532 | 0.7064 | 0.5455 | 0.5093 | 0.0815 | 0.9996 | 0.0257 |
+| Hist Gradient Boosting | validation | 2,058 | 0.1288 | 0.1252 | 0.7645 | 0.5290 | 0.4188 | 0.3637 | 0.0982 | 0.9724 | 0.0201 |
+| Hist Gradient Boosting | test | 2,198 | 0.1442 | 0.1314 | 0.7818 | 0.5635 | 0.4333 | 0.3826 | 0.1062 | 0.9113 | 0.0211 |
+| Hist Gradient Boosting | recent | 863 | 0.1599 | 0.1388 | 0.7705 | 0.5409 | 0.4284 | 0.3766 | 0.1181 | 0.8681 | 0.0312 |
 
 ## 3. Over-fitting and temporal stability (ROC-AUC)
 
 | model | train_auc | validation_auc | test_auc | recent_auc | overfit_gap | temporal_change | diagnosis |
 |---|---|---|---|---|---|---|---|
-| Hist Gradient Boosting | 0.8532 | 0.7644 | 0.7817 | 0.7706 | 0.0888 | 0.0062 | overfits (train >> validation) |
+| Hist Gradient Boosting | 0.8532 | 0.7645 | 0.7818 | 0.7705 | 0.0887 | 0.0060 | overfits (train >> validation) |
 | Logistic Regression | 0.7849 | 0.7765 | 0.7840 | 0.7643 | 0.0084 | -0.0122 | generalises (small train-validation gap) |
 | Random Forest | 0.8527 | 0.7662 | 0.7788 | 0.7677 | 0.0865 | 0.0015 | overfits (train >> validation) |
 
@@ -161,8 +161,8 @@ Precision 0.379, recall/sensitivity 0.502, specificity 0.861, F1 0.431.
 | skewed__collections_last_30d | 0.3121 | 1.3663 |
 | numeric__interest_rate | 0.2829 | 1.3270 |
 | numeric__borrowing_frequency_90d | -0.2534 | 0.7762 |
-| numeric__missingindicator_days_since_last_loan | -0.2360 | 0.7897 |
-| numeric__missingindicator_partial_payment_ratio | -0.2360 | 0.7897 |
+| skewed__missingindicator_amount_to_largest_prior | -0.2360 | 0.7897 |
+| skewed__missingindicator_average_loan_amount | -0.2360 | 0.7897 |
 
 ### Individual explanations (baseline substitution, champion)
 
@@ -173,7 +173,7 @@ median/mode). Positive values increase predicted risk.
 
 | feature | value | reference | pd_contribution |
 |---|---|---|---|
-| income_proxy_monthly | 5286.553333333334 | 28188.57666666667 | +0.3647 |
+| income_proxy_monthly | 5286.553333333333 | 28188.57666666667 | +0.3647 |
 | loan_amount | 500.0 | 7300.0 | +0.2324 |
 | average_transaction_amount_90d | 1439.8276190476192 | 7283.853333333333 | -0.2193 |
 | employment_status | unemployed | salaried | +0.1625 |
@@ -186,10 +186,10 @@ median/mode). Positive values increase predicted risk.
 |---|---|---|---|
 | collections_last_90d | 0.0 | 5275.67 | +0.0640 |
 | collections_last_30d | 0.0 | 2045.67 | -0.0473 |
+| amount_to_largest_prior |  | 0.9259259259259259 | -0.0448 |
 | average_loan_amount |  | 8850.0 | -0.0448 |
 | days_since_last_loan |  | 31.0 | -0.0448 |
-| partial_payment_ratio |  | 0.1 | -0.0448 |
-| amount_to_largest_prior |  | 0.9259259259259259 | -0.0448 |
+| days_since_last_repayment |  | 9.0 | -0.0448 |
 
 **Low Risk** — loan `L0006662`, predicted PD 1.1%, actual outcome: good
 

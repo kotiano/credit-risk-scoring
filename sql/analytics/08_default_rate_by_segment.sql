@@ -11,4 +11,4 @@ SELECT
 FROM marts.borrower_mart AS bm
 JOIN marts.loan_repayment_summary AS s USING (borrower_id)
 GROUP BY bm.risk_segment
-ORDER BY default_rate;
+ORDER BY default_rate, bad_30dpd_rate, bm.risk_segment;

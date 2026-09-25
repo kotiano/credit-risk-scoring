@@ -47,14 +47,14 @@ Top 10 features by PSI in each window:
 | current | total_disbursed | 0.0623 | stable |
 | current | average_days_to_repay | 0.0563 | stable |
 | current | median_days_to_repay | 0.0542 | stable |
-| current | collections_last_90d | 0.0515 | stable |
 | current | loan_to_income_proxy | 0.0512 | stable |
-| current | collection_rate | 0.0453 | stable |
+| current | collections_last_90d | 0.0511 | stable |
 | validation | total_disbursed | 0.0453 | stable |
+| current | collection_rate | 0.0448 | stable |
 | validation | days_since_last_delinquency | 0.0440 | stable |
 | validation | average_loan_amount | 0.0409 | stable |
+| test | repayment_consistency | 0.0396 | stable |
 | validation | completed_loans | 0.0392 | stable |
-| test | repayment_consistency | 0.0390 | stable |
 | validation | number_of_loans | 0.0365 | stable |
 | test | largest_loan | 0.0353 | stable |
 | validation | collections_last_90d | 0.0308 | stable |
@@ -64,7 +64,7 @@ Top 10 features by PSI in each window:
 | test | loan_to_declared_income | 0.0281 | stable |
 | test | days_since_last_delinquency | 0.0271 | stable |
 | test | completed_loans | 0.0260 | stable |
-| test | collection_rate | 0.0223 | stable |
+| test | collection_rate | 0.0224 | stable |
 | test | average_loan_amount | 0.0215 | stable |
 | test | loan_to_income_proxy | 0.0207 | stable |
 

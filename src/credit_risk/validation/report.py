@@ -32,7 +32,9 @@ def render_data_quality_report(payload: dict[str, Any], path: Path) -> None:
         "status",
         "treatment",
     ]
-    missing_nonzero = missing[missing["missing"] > 0].sort_values("missing_pct", ascending=False)
+    missing_nonzero = missing[missing["missing"] > 0].sort_values(
+        "missing_pct", ascending=False, kind="stable"
+    )
 
     lines = [
         "# Data Quality Report",
