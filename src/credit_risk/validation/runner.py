@@ -6,6 +6,7 @@ import json
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 import duckdb
 import pandas as pd
@@ -152,7 +153,7 @@ def quarantine_summary(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     return pd.concat(parts, ignore_index=True)
 
 
-def run_data_quality(con: duckdb.DuckDBPyConnection, out_dir: Path) -> dict[str, object]:
+def run_data_quality(con: duckdb.DuckDBPyConnection, out_dir: Path) -> dict[str, Any]:
     """Run all checks, persist results to ``quality.*`` and JSON; raise on FAIL."""
     results = run_checks(con, SOURCE_CHECKS) + run_checks(con, CLEAN_CHECKS)
     results_df = pd.DataFrame([asdict(r) for r in results])

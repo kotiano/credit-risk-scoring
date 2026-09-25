@@ -33,21 +33,21 @@ for manual review. Flagged: **0**.
 
 | feature | coverage | univariate_auc | flag |
 |---|---|---|---|
-| largest_loan | 0.6453 | 0.7079 | ok |
-| loan_amount | 1.0000 | 0.7052 | ok |
-| average_loan_amount | 0.6453 | 0.7035 | ok |
-| collection_rate | 0.5982 | 0.7008 | ok |
-| avg_dpd | 0.5982 | 0.6995 | ok |
-| late_payment_ratio | 0.6451 | 0.6990 | ok |
-| declared_monthly_income | 0.9849 | 0.6956 | ok |
-| transaction_volume_90d | 1.0000 | 0.6926 | ok |
-| income_proxy_monthly | 1.0000 | 0.6924 | ok |
-| transaction_count_90d | 1.0000 | 0.6816 | ok |
-| average_balance_90d | 1.0000 | 0.6558 | ok |
-| collections_last_90d | 1.0000 | 0.6411 | ok |
-| loan_to_declared_income | 0.9849 | 0.6386 | ok |
-| total_disbursed | 1.0000 | 0.6371 | ok |
-| income_volatility_180d | 0.9866 | 0.6289 | ok |
+| largest_loan | 0.6453 | 0.7063 | ok |
+| loan_amount | 1.0000 | 0.7039 | ok |
+| average_loan_amount | 0.6453 | 0.7020 | ok |
+| collection_rate | 0.5982 | 0.6993 | ok |
+| avg_dpd | 0.5982 | 0.6972 | ok |
+| late_payment_ratio | 0.6451 | 0.6970 | ok |
+| declared_monthly_income | 0.9849 | 0.6947 | ok |
+| transaction_volume_90d | 1.0000 | 0.6917 | ok |
+| income_proxy_monthly | 1.0000 | 0.6915 | ok |
+| transaction_count_90d | 1.0000 | 0.6815 | ok |
+| average_balance_90d | 1.0000 | 0.6552 | ok |
+| collections_last_90d | 1.0000 | 0.6397 | ok |
+| loan_to_declared_income | 0.9849 | 0.6376 | ok |
+| total_disbursed | 1.0000 | 0.6358 | ok |
+| income_volatility_180d | 0.9866 | 0.6292 | ok |
 
 ## 4. Feature-by-feature review
 

@@ -35,7 +35,7 @@ def logistic_coefficients(model: Pipeline) -> pd.DataFrame:
 
 def permutation_importances(
     model: Pipeline,
-    X: pd.DataFrame,
+    X: pd.DataFrame,  # noqa: N803
     y: pd.Series,
     random_state: int,
     n_repeats: int = 5,

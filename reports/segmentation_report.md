@@ -11,20 +11,22 @@ decisions, and the labels are analytical conventions rather than established tru
 Rules are evaluated top-down (first match wins) in `sql/marts/07_borrower_mart.sql`:
 
 1. **Default / Recovery** - any loan reached 90+ DPD.
-2. **High Risk / Persistent Delinquency** - currently 30+ DPD, or 2+ loans reached 30+ DPD.
-3. **Emerging Delinquency** - currently 1-29 DPD, or the latest settled loan reached 7+ DPD.
+2. **High Risk / Persistent Delinquency** - currently 30+ DPD, or 2+ loans reached
+   30+ DPD.
+3. **Emerging Delinquency** - currently 1-29 DPD, or the latest settled loan reached
+   7+ DPD.
 4. **Moderate Risk** - ever 7+ DPD, or more than 1/3 of settled loans repaid late.
 5. **Low Risk / New Borrower** - at most one settled loan and none of the above.
 6. **Low Risk / Strong Repayer** - everyone else (2+ settled loans, clean history).
 
 | risk_segment | borrowers | total_loans | outstanding_principal | repayment_rate | late_payment_ratio | share_ever_30dpd | borrower_share |
 |---|---|---|---|---|---|---|---|
-| Low Risk / Strong Repayer | 1,048 | 5,300 | 5,603,536 | 0.9992 | 0.0713 | 0.0000 | 21.1% |
-| Low Risk / New Borrower | 554 | 615 | 1,671,161 | 1.0000 | 0.0000 | 0.0000 | 11.1% |
-| Moderate Risk | 693 | 2,420 | 1,938,947 | 0.9993 | 0.6576 | 0.0404 | 13.9% |
-| Emerging Delinquency | 1,452 | 3,795 | 1,836,219 | 0.9555 | 0.7544 | 0.2899 | 29.2% |
-| High Risk / Persistent Delinquency | 207 | 588 | 1,287,789 | 0.5775 | 0.5455 | 1.0000 | 4.2% |
-| Default / Recovery | 1,021 | 2,402 | 1,469,714 | 0.5391 | 0.5937 | 1.0000 | 20.5% |
+| Low Risk / Strong Repayer | 1,047 | 5,290 | 5,603,536 | 0.9992 | 0.0716 | 0.0000 | 21.0% |
+| Low Risk / New Borrower | 555 | 616 | 1,671,161 | 1.0000 | 0.0000 | 0.0000 | 11.2% |
+| Moderate Risk | 691 | 2,398 | 1,917,047 | 0.9993 | 0.6585 | 0.0405 | 13.9% |
+| Emerging Delinquency | 1,453 | 3,784 | 1,837,719 | 0.9555 | 0.7557 | 0.2904 | 29.2% |
+| High Risk / Persistent Delinquency | 205 | 585 | 1,284,400 | 0.5744 | 0.5455 | 1.0000 | 4.1% |
+| Default / Recovery | 1,024 | 2,447 | 1,530,157 | 0.5408 | 0.5896 | 1.0000 | 20.6% |
 
 ## 2. K-Means on behavioural features
 
@@ -32,12 +34,12 @@ Features (log1p for counts/DPD, then standardised): total_loans, repayment_rate,
 
 | k | silhouette |
 |---|---|
-| 3 | 0.2784 |
-| 4 | 0.2815 |
-| 5 | 0.2953 |
-| 6 | 0.3111 |
-| 7 | 0.3268 |
-| 8 | 0.3345 |
+| 3 | 0.2782 |
+| 4 | 0.2812 |
+| 5 | 0.3106 |
+| 6 | 0.3112 |
+| 7 | 0.3211 |
+| 8 | 0.3344 |
 
 Selected **k = 6**. Silhouette scores are low (< 0.4) and change slowly
 with k, i.e. borrower behaviour forms a continuum rather than well-separated
@@ -47,25 +49,25 @@ ascending share of borrowers who ever defaulted.
 
 | cluster | borrowers | total_loans | repayment_rate | late_payment_ratio | max_dpd_ever | current_dpd | share_ever_defaulted | dominant_rule_segment |
 |---|---|---|---|---|---|---|---|---|
-| Cluster 1 | 1,296 | 2.0000 | 0.9993 | 0.0909 | 0.0000 | 0.0008 | 0.0000 | Low Risk / Strong Repayer |
-| Cluster 2 | 969 | 1.0000 | 0.9995 | 0.8878 | 15.0000 | 0.0165 | 0.0000 | Emerging Delinquency |
-| Cluster 3 | 1,016 | 4.0000 | 0.9828 | 0.2695 | 4.0000 | 0.6112 | 0.0089 | Low Risk / Strong Repayer |
-| Cluster 4 | 707 | 2.0000 | 0.9416 | 0.8324 | 79.0000 | 0.2334 | 0.3890 | Emerging Delinquency |
-| Cluster 5 | 457 | 2.0000 | 0.4725 | 0.5095 | 83.0000 | 85.7090 | 0.4573 | Default / Recovery |
-| Cluster 6 | 530 | 1.0000 | 0.3903 | 0.2597 | 489.0000 | 0.0057 | 0.9962 | Default / Recovery |
+| Cluster 1 | 1,297 | 2.0000 | 0.9993 | 0.0911 | 0.0000 | 0.0008 | 0.0000 | Low Risk / Strong Repayer |
+| Cluster 2 | 970 | 1.0000 | 0.9995 | 0.8879 | 15.0000 | 0.0165 | 0.0000 | Emerging Delinquency |
+| Cluster 3 | 1,015 | 4.0000 | 0.9826 | 0.2701 | 4.0000 | 0.6118 | 0.0118 | Low Risk / Strong Repayer |
+| Cluster 4 | 705 | 2.0000 | 0.9418 | 0.8332 | 78.0000 | 0.2340 | 0.3858 | Emerging Delinquency |
+| Cluster 5 | 458 | 2.0000 | 0.4742 | 0.5068 | 83.0000 | 86.0742 | 0.4629 | Default / Recovery |
+| Cluster 6 | 530 | 1.0000 | 0.3908 | 0.2597 | 489.0000 | 0.0057 | 0.9962 | Default / Recovery |
 
 ## 3. Rules vs clusters
 
-Adjusted Rand Index = **0.277**, normalised mutual information = **0.444**.
+Adjusted Rand Index = **0.276**, normalised mutual information = **0.443**.
 
 | risk_segment | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 | Cluster 5 | Cluster 6 |
 |---|---|---|---|---|---|---|
-| Low Risk / Strong Repayer | 616 | 0 | 432 | 0 | 0 | 0 |
-| Low Risk / New Borrower | 473 | 0 | 81 | 0 | 0 | 0 |
-| Moderate Risk | 102 | 339 | 233 | 19 | 0 | 0 |
-| Emerging Delinquency | 105 | 630 | 261 | 385 | 69 | 2 |
-| High Risk / Persistent Delinquency | 0 | 0 | 0 | 28 | 179 | 0 |
-| Default / Recovery | 0 | 0 | 9 | 275 | 209 | 528 |
+| Low Risk / Strong Repayer | 616 | 0 | 431 | 0 | 0 | 0 |
+| Low Risk / New Borrower | 474 | 0 | 81 | 0 | 0 | 0 |
+| Moderate Risk | 102 | 339 | 231 | 19 | 0 | 0 |
+| Emerging Delinquency | 105 | 631 | 260 | 386 | 69 | 2 |
+| High Risk / Persistent Delinquency | 0 | 0 | 0 | 28 | 177 | 0 |
+| Default / Recovery | 0 | 0 | 12 | 272 | 212 | 528 |
 
 ### How to read the differences
 

@@ -37,7 +37,9 @@ class Paths:
             PROJECT_ROOT / os.getenv("CREDIT_RISK_DB_PATH", "data/warehouse/credit_risk.duckdb")
         )
     )
-    artifacts: Path = PROJECT_ROOT / "artifacts"
+    artifacts: Path = field(
+        default_factory=lambda: PROJECT_ROOT / os.getenv("CREDIT_RISK_ARTIFACTS_DIR", "artifacts")
+    )
     reports: Path = PROJECT_ROOT / "reports"
 
     @property

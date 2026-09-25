@@ -76,7 +76,7 @@ def evaluate_models(con: duckdb.DuckDBPyConnection, settings: Settings) -> dict[
                 }
             )
     performance = pd.DataFrame(perf_rows)
-    wide = performance.pivot(index="model", columns="split", values="roc_auc")
+    wide = performance.pivot_table(index="model", columns="split", values="roc_auc")
     diagnostics = pd.DataFrame(
         {
             "model": wide.index,
@@ -145,13 +145,15 @@ def evaluate_models(con: duckdb.DuckDBPyConnection, settings: Settings) -> dict[
     test_rows = test_rows.merge(test[["loan_id", "pd"]], on="loan_id")
     examples = {}
     for label, q in (("high_risk", 0.98), ("median_risk", 0.50), ("low_risk", 0.02)):
-        idx = int((test_rows["pd"] - test_rows["pd"].quantile(q)).abs().idxmin())
+        pds = test_rows["pd"].to_numpy(dtype=float)
+        idx = int(np.abs(pds - np.quantile(pds, q)).argmin())
+        record = test_rows.iloc[idx]
         row = feature_frame(test_rows.iloc[[idx]])
         expl = local_explanation(models[champion], row, reference)
         examples[label] = {
-            "loan_id": test_rows.loc[idx, "loan_id"],
-            "pd": float(test_rows.loc[idx, "pd"]),
-            "actual_outcome": int(test_rows.loc[idx, "target"]),
+            "loan_id": str(record["loan_id"]),
+            "pd": float(pds[idx]),
+            "actual_outcome": int(record["target"]),
             "contributions": _records(expl.astype({"value": str, "reference": str})),
         }
 
@@ -208,7 +210,11 @@ def _conclusions(diag: pd.DataFrame, champ_perf: pd.DataFrame, champion: str) ->
             )
             + ". Higher training fit did not translate into better out-of-time ranking."
         )
-    ratio = champ_perf.loc["recent", "calibration_ratio"]
+    ratio = float(
+        champ_perf["calibration_ratio"].to_numpy(dtype=float)[
+            list(champ_perf.index).index("recent")
+        ]
+    )
     if ratio < 0.95:
         out.append(
             f"- The champion under-predicts default in the most recent matured window "

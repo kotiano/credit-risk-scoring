@@ -158,7 +158,8 @@ def threshold_table(
 
 def best_f1_threshold(y_true: np.ndarray, y_prob: np.ndarray) -> float:
     precision, recall, thresholds = precision_recall_curve(y_true, y_prob)
-    f1 = np.where(precision + recall > 0, 2 * precision * recall / (precision + recall), 0)
+    denom = precision + recall
+    f1 = np.divide(2 * precision * recall, denom, out=np.zeros_like(denom), where=denom > 0)
     return float(thresholds[int(np.argmax(f1[:-1]))])
 
 

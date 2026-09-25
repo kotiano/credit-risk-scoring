@@ -506,7 +506,7 @@ def _generate_loans(
     repayments: list[dict[str, Any]] = []
 
     def issue_loan(
-        b: pd.Series,
+        b: Any,  # borrower row (itertuples namedtuple)
         b_idx: int,
         start: date,
         history_effect: float,
@@ -582,6 +582,7 @@ def _generate_loans(
         payoff = max(d for d, _ in observed) if observed and total_due - paid <= 1.0 else None
         return outcome, payoff
 
+    b: Any
     for b_idx, b in enumerate(borrowers.itertuples(index=False)):
         if b.onboarding_date < cfg.portfolio_start:
             # Legacy customers: first in-window loan spread over the first ~4 months.
@@ -597,7 +598,7 @@ def _generate_loans(
                 start,
                 history_effect,
                 limit_mult,
-                last_outcome,  # type: ignore[arg-type]
+                last_outcome,
             )
             if outcome in {"early", "on_time"}:
                 n_good += 1
@@ -609,7 +610,7 @@ def _generate_loans(
                     if top_up_start < snapshot:
                         issue_loan(
                             b, b_idx, top_up_start, history_effect, limit_mult * 0.5, last_outcome
-                        )  # type: ignore[arg-type]
+                        )
             else:
                 history_effect += HISTORY_EFFECT[outcome]
                 if outcome != "late_1_6":
@@ -637,104 +638,115 @@ def _generate_loans(
 def _inject_quality_issues(
     tables: dict[str, pd.DataFrame], rng: np.random.Generator
 ) -> dict[str, dict[str, int]]:
-    """Inject realistic raw-extract defects in place; return a manifest of counts."""
+    """Inject realistic raw-extract defects in place; return a manifest of counts.
+
+    Defect counts are proportional to table size (at least one of each), so small test
+    portfolios have the same defect *rates* as the full extract.
+    """
     manifest: dict[str, dict[str, int]] = {}
 
     def pick(df: pd.DataFrame, k: int) -> np.ndarray:
         return rng.choice(df.index.to_numpy(), size=k, replace=False)
 
+    def n_of(df: pd.DataFrame, rate: float) -> int:
+        return max(1, round(rate * len(df)))
+
+    # ---- borrowers: missing income, income unit errors, label variants, duplicates
     b = tables["borrowers"]
     b["gender"] = b["gender"].astype(object)
-    idx = pick(b, int(0.015 * len(b)))
-    b.loc[idx, "monthly_income"] = np.nan
-    outliers = pick(b.drop(index=idx), 8)
-    b.loc[outliers, "monthly_income"] = b.loc[outliers, "monthly_income"] * 100  # unit error
-    variants = pick(b, int(0.03 * len(b)))
+    missing = pick(b, n_of(b, 0.015))
+    b.loc[missing, "monthly_income"] = np.nan
+    unit_errors = pick(b.drop(index=pd.Index(missing)), n_of(b, 0.0016))
+    b.loc[unit_errors, "monthly_income"] = b.loc[unit_errors, "monthly_income"] * 100
+    variants = pick(b, n_of(b, 0.03))
     b.loc[variants, "gender"] = b.loc[variants, "gender"].map(
         {"F": "female", "M": " m", "U": "unknown"}
     )
-    dups = b.loc[pick(b, 6)]
+    dups = b.loc[pick(b, n_of(b, 0.0012))]
     tables["borrowers"] = pd.concat([b, dups], ignore_index=True)
     manifest["borrowers"] = {
-        "missing_income": len(idx),
-        "income_unit_errors": 8,
+        "missing_income": len(missing),
+        "income_unit_errors": len(unit_errors),
         "label_variants": len(variants),
-        "exact_duplicates": 6,
+        "exact_duplicates": len(dups),
     }
 
+    # ---- loans: swapped dates, zero principal, status label variants, duplicates
     ln = tables["loans"]
     ln["loan_status"] = ln["loan_status"].astype(object)
-    swapped = pick(ln, 3)
+    swapped = pick(ln, n_of(ln, 0.0002))
     ln.loc[swapped, ["disbursement_date", "due_date"]] = ln.loc[
         swapped, ["due_date", "disbursement_date"]
     ].to_numpy()
-    zero_amount = pick(ln.drop(index=swapped), 2)
+    zero_amount = pick(ln.drop(index=pd.Index(swapped)), n_of(ln, 0.00013))
     ln.loc[zero_amount, "loan_amount"] = 0.0
-    variants = pick(ln, int(0.03 * len(ln)))
+    variants = pick(ln, n_of(ln, 0.03))
     ln.loc[variants, "loan_status"] = ln.loc[variants, "loan_status"].map(
         lambda s: rng.choice([s.upper(), f" {s} ", s.title()])
     )
-    dups = ln.loc[pick(ln, 4)]
+    dups = ln.loc[pick(ln, n_of(ln, 0.00027))]
     tables["loans"] = pd.concat([ln, dups], ignore_index=True)
     rejected_loan_ids = set(ln.loc[np.concatenate([swapped, zero_amount]), "loan_id"])
     manifest["loans"] = {
-        "due_before_disbursement": 3,
-        "non_positive_amount": 2,
+        "due_before_disbursement": len(swapped),
+        "non_positive_amount": len(zero_amount),
         "label_variants": len(variants),
-        "exact_duplicates": 4,
+        "exact_duplicates": len(dups),
     }
 
+    # ---- repayments: bad amounts, pre-disbursement dates, orphans, duplicates, re-posts
     r = tables["repayments"]
     loan_disb = tables["loans"].drop_duplicates("loan_id").set_index("loan_id")["disbursement_date"]
     eligible = r[~r["loan_id"].isin(rejected_loan_ids)]
     cascaded = int(r["loan_id"].isin(rejected_loan_ids).sum())
-    bad_amount = pick(eligible, 6)
-    r.loc[bad_amount, "amount"] = rng.choice([0.0, -50.0, -120.0], size=6)
-    eligible = eligible.drop(index=bad_amount)
-    early = pick(eligible, 5)
+    bad_amount = pick(eligible, n_of(r, 0.0003))
+    r.loc[bad_amount, "amount"] = rng.choice([0.0, -50.0, -120.0], size=len(bad_amount))
+    eligible = eligible.drop(index=pd.Index(bad_amount))
+    early = pick(eligible, n_of(r, 0.00025))
     r.loc[early, "repayment_date"] = [
         loan_disb[lid] - timedelta(days=int(rng.integers(1, 10))) for lid in r.loc[early, "loan_id"]
     ]
-    variants = pick(r, int(0.05 * len(r)))
+    variants = pick(r, n_of(r, 0.05))
     r.loc[variants, "payment_channel"] = r.loc[variants, "payment_channel"].map(
         lambda c: rng.choice([c.upper(), f" {c} ", c.replace("_", " ").title()])
     )
-    orphans = r.loc[pick(r, 12)].copy()
-    orphans["loan_id"] = [f"L9{i:06d}" for i in range(12)]
-    orphans["repayment_id"] = [f"R9{i:07d}" for i in range(12)]
-    orphans["transaction_reference"] = [f"MPORPHAN{i:06d}" for i in range(12)]
-    exact = r.loc[pick(r, int(0.004 * len(r)))]
-    reposted = r.loc[pick(r.drop(index=exact.index), 10)].copy()  # integration retry
-    reposted["repayment_id"] = [f"R8{i:07d}" for i in range(10)]
+    orphans = r.loc[pick(r, n_of(r, 0.0006))].copy()
+    orphans["loan_id"] = [f"L9{i:06d}" for i in range(len(orphans))]
+    orphans["repayment_id"] = [f"R9{i:07d}" for i in range(len(orphans))]
+    orphans["transaction_reference"] = [f"MPORPHAN{i:06d}" for i in range(len(orphans))]
+    exact = r.loc[pick(r, n_of(r, 0.004))]
+    reposted = r.loc[pick(r.drop(index=exact.index), n_of(r, 0.0005))].copy()  # retry
+    reposted["repayment_id"] = [f"R8{i:07d}" for i in range(len(reposted))]
     tables["repayments"] = pd.concat([r, orphans, exact, reposted], ignore_index=True)
     manifest["repayments"] = {
-        "non_positive_amount": 6,
-        "before_disbursement": 5,
+        "non_positive_amount": len(bad_amount),
+        "before_disbursement": len(early),
         "label_variants": len(variants),
-        "orphan_loan_id": 12,
+        "orphan_loan_id": len(orphans),
         "exact_duplicates": len(exact),
-        "reposted_duplicates": 10,
+        "reposted_duplicates": len(reposted),
         "linked_to_rejected_loans": cascaded,
     }
 
+    # ---- transactions: null amounts, outliers, future dates, label variants, duplicates
     t = tables["transactions"]
     t["transaction_type"] = t["transaction_type"].astype(object)
-    null_amount = pick(t, 20)
+    null_amount = pick(t, n_of(t, 0.000025))
     t.loc[null_amount, "amount"] = np.nan
-    outl = pick(t.drop(index=null_amount), 15)
+    outl = pick(t.drop(index=pd.Index(null_amount)), n_of(t, 0.00002))
     t.loc[outl, "amount"] = t.loc[outl, "amount"] * 50
-    future = pick(t.drop(index=np.concatenate([null_amount, outl])), 10)
+    future = pick(t.drop(index=pd.Index(np.concatenate([null_amount, outl]))), n_of(t, 0.0000125))
     t.loc[future, "transaction_date"] = [
-        date(2026, 3, 1) + timedelta(days=int(d)) for d in rng.integers(0, 60, size=10)
+        date(2026, 3, 1) + timedelta(days=int(d)) for d in rng.integers(0, 60, size=len(future))
     ]
-    variants = pick(t, int(0.02 * len(t)))
+    variants = pick(t, n_of(t, 0.02))
     t.loc[variants, "transaction_type"] = t.loc[variants, "transaction_type"].str.upper()
-    dups = t.loc[pick(t, int(0.002 * len(t)))]
+    dups = t.loc[pick(t, n_of(t, 0.002))]
     tables["transactions"] = pd.concat([t, dups], ignore_index=True)
     manifest["transactions"] = {
-        "null_amount": 20,
-        "amount_outliers": 15,
-        "future_dated": 10,
+        "null_amount": len(null_amount),
+        "amount_outliers": len(outl),
+        "future_dated": len(future),
         "label_variants": len(variants),
         "exact_duplicates": len(dups),
     }
@@ -759,7 +771,9 @@ def generate_portfolio(cfg: GeneratorConfig) -> tuple[dict[str, pd.DataFrame], d
     loans, repayments = _generate_loans(borrowers, months, shocks, cfg, rng)
 
     tables = {
-        "borrowers": borrowers.drop(columns=[c for c in borrowers if c.startswith("sim_")]),
+        "borrowers": borrowers.drop(
+            columns=[c for c in borrowers.columns if str(c).startswith("sim_")]
+        ),
         "loans": loans,
         "repayments": repayments,
         "transactions": transactions,

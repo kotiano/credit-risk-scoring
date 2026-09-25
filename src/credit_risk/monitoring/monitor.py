@@ -116,7 +116,7 @@ def monthly_monitoring(frame: pd.DataFrame, settings: Settings) -> pd.DataFrame:
         enough = len(matured) >= MIN_MATURED_FOR_AUC and 0 < y.sum() < len(y)
         rows.append(
             {
-                "month": month.date().isoformat(),
+                "month": pd.Timestamp(month).date().isoformat(),  # type: ignore[arg-type]
                 "split": g["sample_split"].mode().iloc[0],
                 "applications": len(g),
                 "matured": len(matured),

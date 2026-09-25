@@ -49,12 +49,16 @@ select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "PL", "RUF", "NPY", "PD"]
 ignore = [
     "PLR0913",  # analytical functions legitimately take several parameters
     "PLR2004",  # thresholds are named in config; small literals in tests are fine
-    "PD901",    # `df` is an acceptable local name for a DataFrame
-    "PLR0915",
+    "PLR0915",  # report renderers are long, linear lists of sections
+    "PLR0917",  # analytical functions legitimately take several positional parameters
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["PLR2004", "S101"]
+"tests/*" = ["PLR2004", "PLC0415"]
+# Stages import their dependencies lazily so `credit-risk --help` stays fast.
+"src/credit_risk/cli.py" = ["PLC0415"]
+# Dashboard: short module aliases (T, M) and UI glyphs (✓, →, –) are intentional.
+"dashboard/*" = ["N812", "RUF001", "E402"]
 "notebooks/*" = ["E402", "B018"]
 
 [tool.ruff.format]

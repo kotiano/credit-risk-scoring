@@ -7,33 +7,33 @@
 - **Target:** bad_30dpd: loan reached 30 DPD within the performance window (disbursement to due date + 30 days).
 - **Windows (out-of-time):** train `decision_date <= 2025-03-31`, validation `2025-03-31 < decision_date <= 2025-06-30`, test `2025-06-30 < decision_date <= 2025-09-30`; `recent` = matured loans decided after the test window (used for monitoring).
 - **Sample sizes:** {'recent': 863, 'test': 2198, 'train': 8813, 'unobserved': 1188, 'validation': 2058}
-- **Champion:** Logistic Regression. Best challenger (random_forest) improves validation ROC-AUC by only -0.0094 (<= 0.01 parsimony margin); the interpretable logistic baseline is kept.
-- **Reference threshold:** PD >= 0.214 (max F1 on the validation window). Analytical only - not a lending policy.
+- **Champion:** Logistic Regression. Best challenger (random_forest) trails the logistic baseline by 0.0103 validation ROC-AUC (parsimony margin 0.01); the interpretable logistic baseline is kept.
+- **Reference threshold:** PD >= 0.212 (max F1 on the validation window). Analytical only - not a lending policy.
 
 ## 2. Discrimination and calibration by model and window
 
 | model | split | n | bad_rate | mean_pd | roc_auc | gini | ks | pr_auc | brier | calibration_ratio | ece |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Logistic Regression | train | 8,813 | 0.1212 | 0.1212 | 0.7861 | 0.5723 | 0.4378 | 0.3875 | 0.0902 | 1.0000 | 0.0070 |
-| Logistic Regression | validation | 2,058 | 0.1283 | 0.1285 | 0.7800 | 0.5600 | 0.4290 | 0.3956 | 0.0954 | 1.0018 | 0.0205 |
-| Logistic Regression | test | 2,198 | 0.1438 | 0.1322 | 0.7838 | 0.5676 | 0.4324 | 0.3925 | 0.1051 | 0.9197 | 0.0115 |
-| Logistic Regression | recent | 863 | 0.1611 | 0.1411 | 0.7652 | 0.5304 | 0.4141 | 0.3949 | 0.1180 | 0.8758 | 0.0365 |
-| Random Forest | train | 8,813 | 0.1212 | 0.1217 | 0.8535 | 0.7069 | 0.5386 | 0.4590 | 0.0858 | 1.0042 | 0.0322 |
-| Random Forest | validation | 2,058 | 0.1283 | 0.1227 | 0.7706 | 0.5412 | 0.4353 | 0.3571 | 0.0978 | 0.9565 | 0.0227 |
-| Random Forest | test | 2,198 | 0.1438 | 0.1284 | 0.7793 | 0.5585 | 0.4157 | 0.3896 | 0.1063 | 0.8933 | 0.0235 |
-| Random Forest | recent | 863 | 0.1611 | 0.1390 | 0.7682 | 0.5363 | 0.4260 | 0.3538 | 0.1192 | 0.8632 | 0.0322 |
-| Hist Gradient Boosting | train | 8,813 | 0.1212 | 0.1212 | 0.8529 | 0.7058 | 0.5422 | 0.5123 | 0.0814 | 0.9999 | 0.0248 |
-| Hist Gradient Boosting | validation | 2,058 | 0.1283 | 0.1250 | 0.7694 | 0.5387 | 0.4247 | 0.3667 | 0.0974 | 0.9742 | 0.0160 |
-| Hist Gradient Boosting | test | 2,198 | 0.1438 | 0.1313 | 0.7839 | 0.5677 | 0.4278 | 0.3888 | 0.1053 | 0.9136 | 0.0159 |
-| Hist Gradient Boosting | recent | 863 | 0.1611 | 0.1391 | 0.7743 | 0.5486 | 0.4451 | 0.3774 | 0.1189 | 0.8638 | 0.0393 |
+| Logistic Regression | train | 8,813 | 0.1213 | 0.1213 | 0.7849 | 0.5699 | 0.4367 | 0.3868 | 0.0903 | 0.9997 | 0.0082 |
+| Logistic Regression | validation | 2,058 | 0.1288 | 0.1282 | 0.7765 | 0.5531 | 0.4198 | 0.3946 | 0.0960 | 0.9957 | 0.0197 |
+| Logistic Regression | test | 2,198 | 0.1442 | 0.1322 | 0.7840 | 0.5681 | 0.4297 | 0.3916 | 0.1054 | 0.9167 | 0.0148 |
+| Logistic Regression | recent | 863 | 0.1599 | 0.1408 | 0.7643 | 0.5287 | 0.4129 | 0.3929 | 0.1173 | 0.8804 | 0.0389 |
+| Random Forest | train | 8,813 | 0.1213 | 0.1218 | 0.8527 | 0.7054 | 0.5367 | 0.4584 | 0.0859 | 1.0040 | 0.0319 |
+| Random Forest | validation | 2,058 | 0.1288 | 0.1226 | 0.7662 | 0.5324 | 0.4340 | 0.3554 | 0.0985 | 0.9521 | 0.0216 |
+| Random Forest | test | 2,198 | 0.1442 | 0.1284 | 0.7788 | 0.5577 | 0.4170 | 0.3888 | 0.1067 | 0.8901 | 0.0274 |
+| Random Forest | recent | 863 | 0.1599 | 0.1387 | 0.7677 | 0.5354 | 0.4333 | 0.3509 | 0.1187 | 0.8672 | 0.0326 |
+| Hist Gradient Boosting | train | 8,813 | 0.1213 | 0.1213 | 0.8532 | 0.7065 | 0.5497 | 0.5088 | 0.0815 | 0.9997 | 0.0265 |
+| Hist Gradient Boosting | validation | 2,058 | 0.1288 | 0.1252 | 0.7644 | 0.5288 | 0.4160 | 0.3627 | 0.0982 | 0.9722 | 0.0174 |
+| Hist Gradient Boosting | test | 2,198 | 0.1442 | 0.1314 | 0.7817 | 0.5634 | 0.4360 | 0.3823 | 0.1061 | 0.9109 | 0.0211 |
+| Hist Gradient Boosting | recent | 863 | 0.1599 | 0.1389 | 0.7706 | 0.5411 | 0.4311 | 0.3768 | 0.1179 | 0.8689 | 0.0309 |
 
 ## 3. Over-fitting and temporal stability (ROC-AUC)
 
 | model | train_auc | validation_auc | test_auc | recent_auc | overfit_gap | temporal_change | diagnosis |
 |---|---|---|---|---|---|---|---|
-| Hist Gradient Boosting | 0.8529 | 0.7694 | 0.7839 | 0.7743 | 0.0836 | 0.0049 | overfits (train >> validation) |
-| Logistic Regression | 0.7861 | 0.7800 | 0.7838 | 0.7652 | 0.0062 | -0.0148 | generalises (small train-validation gap) |
-| Random Forest | 0.8535 | 0.7706 | 0.7793 | 0.7682 | 0.0829 | -0.0024 | overfits (train >> validation) |
+| Hist Gradient Boosting | 0.8532 | 0.7644 | 0.7817 | 0.7706 | 0.0888 | 0.0062 | overfits (train >> validation) |
+| Logistic Regression | 0.7849 | 0.7765 | 0.7840 | 0.7643 | 0.0084 | -0.0122 | generalises (small train-validation gap) |
+| Random Forest | 0.8527 | 0.7662 | 0.7788 | 0.7677 | 0.0865 | 0.0015 | overfits (train >> validation) |
 
 Reading: a large train-validation gap indicates over-fitting; a negative
 `temporal_change` (recent - validation) indicates degradation over time.
@@ -44,41 +44,41 @@ Reading: a large train-validation gap indicates over-fitting; a negative
 
 | risk_decile | population | min_pd | max_pd | avg_predicted_pd | actual_default_rate | bads | lift | cum_population_pct | cum_bads_captured_pct | cum_lift |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 220 | 0.3389 | 0.8900 | 0.4815 | 0.4818 | 106 | 3.3514 | 0.1001 | 0.3354 | 3.3514 |
-| 2 | 220 | 0.2013 | 0.3389 | 0.2599 | 0.2727 | 60 | 1.8970 | 0.2002 | 0.5253 | 2.6242 |
-| 3 | 220 | 0.1408 | 0.2011 | 0.1680 | 0.1955 | 43 | 1.3595 | 0.3003 | 0.6614 | 2.2026 |
-| 4 | 219 | 0.1069 | 0.1407 | 0.1229 | 0.1233 | 27 | 0.8576 | 0.3999 | 0.7468 | 1.8675 |
-| 5 | 220 | 0.0808 | 0.1068 | 0.0922 | 0.1227 | 27 | 0.8537 | 0.5000 | 0.8323 | 1.6646 |
-| 6 | 220 | 0.0589 | 0.0807 | 0.0693 | 0.0955 | 21 | 0.6640 | 0.6001 | 0.8987 | 1.4977 |
-| 7 | 219 | 0.0439 | 0.0589 | 0.0511 | 0.0639 | 14 | 0.4447 | 0.6997 | 0.9430 | 1.3477 |
-| 8 | 220 | 0.0322 | 0.0439 | 0.0377 | 0.0409 | 9 | 0.2846 | 0.7998 | 0.9715 | 1.2147 |
-| 9 | 220 | 0.0200 | 0.0321 | 0.0256 | 0.0273 | 6 | 0.1897 | 0.8999 | 0.9905 | 1.1007 |
-| 10 | 220 | 0.0003 | 0.0199 | 0.0136 | 0.0136 | 3 | 0.0949 | 1.0000 | 1.0000 | 1.0000 |
+| 1 | 220 | 0.3429 | 0.8843 | 0.4804 | 0.4682 | 103 | 3.2463 | 0.1001 | 0.3249 | 3.2463 |
+| 2 | 220 | 0.1999 | 0.3412 | 0.2605 | 0.2818 | 62 | 1.9541 | 0.2002 | 0.5205 | 2.6002 |
+| 3 | 220 | 0.1399 | 0.1998 | 0.1676 | 0.2045 | 45 | 1.4183 | 0.3003 | 0.6625 | 2.2062 |
+| 4 | 219 | 0.1058 | 0.1399 | 0.1228 | 0.1233 | 27 | 0.8548 | 0.3999 | 0.7476 | 1.8695 |
+| 5 | 220 | 0.0802 | 0.1055 | 0.0919 | 0.1227 | 27 | 0.8510 | 0.5000 | 0.8328 | 1.6656 |
+| 6 | 220 | 0.0593 | 0.0802 | 0.0695 | 0.0773 | 17 | 0.5358 | 0.6001 | 0.8864 | 1.4772 |
+| 7 | 219 | 0.0442 | 0.0592 | 0.0512 | 0.0868 | 19 | 0.6016 | 0.6997 | 0.9464 | 1.3525 |
+| 8 | 220 | 0.0319 | 0.0439 | 0.0380 | 0.0364 | 8 | 0.2521 | 0.7998 | 0.9716 | 1.2148 |
+| 9 | 220 | 0.0199 | 0.0317 | 0.0260 | 0.0273 | 6 | 0.1891 | 0.8999 | 0.9905 | 1.1007 |
+| 10 | 220 | 0.0002 | 0.0199 | 0.0138 | 0.0136 | 3 | 0.0946 | 1.0000 | 1.0000 | 1.0000 |
 
 ### Analytical risk bands
 
 | risk_band | population | avg_predicted_pd | actual_bad_rate | min_score | max_score | population_share | split |
 |---|---|---|---|---|---|---|---|
-| A - Very Low | 2,469 | 0.0247 | 0.0255 | 579 | 716 | 0.2802 | train |
-| B - Low | 2,193 | 0.0579 | 0.0593 | 558 | 579 | 0.2488 | train |
-| C - Moderate | 1,793 | 0.1099 | 0.1032 | 537 | 558 | 0.2034 | train |
-| D - Elevated | 1,538 | 0.2123 | 0.2152 | 512 | 537 | 0.1745 | train |
-| E - High | 820 | 0.4349 | 0.4378 | 407 | 512 | 0.0930 | train |
-| A - Very Low | 568 | 0.0239 | 0.0282 | 579 | 635 | 0.2760 | validation |
-| B - Low | 523 | 0.0584 | 0.0574 | 558 | 579 | 0.2541 | validation |
-| C - Moderate | 375 | 0.1083 | 0.1360 | 537 | 558 | 0.1822 | validation |
-| D - Elevated | 346 | 0.2093 | 0.1965 | 512 | 537 | 0.1681 | validation |
-| E - High | 246 | 0.4362 | 0.4024 | 425 | 511 | 0.1195 | validation |
-| A - Very Low | 589 | 0.0237 | 0.0255 | 579 | 719 | 0.2680 | test |
-| B - Low | 500 | 0.0572 | 0.0760 | 558 | 579 | 0.2275 | test |
-| C - Moderate | 486 | 0.1098 | 0.1193 | 537 | 557 | 0.2211 | test |
-| D - Elevated | 355 | 0.2067 | 0.2451 | 512 | 537 | 0.1615 | test |
-| E - High | 268 | 0.4527 | 0.4403 | 427 | 512 | 0.1219 | test |
-| A - Very Low | 218 | 0.0247 | 0.0505 | 579 | 631 | 0.2526 | recent |
-| B - Low | 196 | 0.0568 | 0.0561 | 558 | 579 | 0.2271 | recent |
-| C - Moderate | 181 | 0.1132 | 0.1547 | 537 | 558 | 0.2097 | recent |
-| D - Elevated | 162 | 0.2186 | 0.2778 | 512 | 537 | 0.1877 | recent |
-| E - High | 106 | 0.4654 | 0.4151 | 454 | 511 | 0.1228 | recent |
+| A - Very Low | 2,433 | 0.0249 | 0.0267 | 579 | 732 | 0.2761 | train |
+| B - Low | 2,232 | 0.0577 | 0.0587 | 558 | 579 | 0.2533 | train |
+| C - Moderate | 1,783 | 0.1097 | 0.1032 | 537 | 558 | 0.2023 | train |
+| D - Elevated | 1,538 | 0.2114 | 0.2139 | 512 | 537 | 0.1745 | train |
+| E - High | 827 | 0.4334 | 0.4353 | 408 | 512 | 0.0938 | train |
+| A - Very Low | 565 | 0.0241 | 0.0283 | 579 | 640 | 0.2745 | validation |
+| B - Low | 523 | 0.0581 | 0.0574 | 558 | 579 | 0.2541 | validation |
+| C - Moderate | 388 | 0.1089 | 0.1418 | 537 | 558 | 0.1885 | validation |
+| D - Elevated | 342 | 0.2118 | 0.1930 | 512 | 537 | 0.1662 | validation |
+| E - High | 240 | 0.4382 | 0.4083 | 427 | 512 | 0.1166 | validation |
+| A - Very Low | 583 | 0.0238 | 0.0240 | 579 | 737 | 0.2652 | test |
+| B - Low | 514 | 0.0576 | 0.0759 | 558 | 579 | 0.2338 | test |
+| C - Moderate | 484 | 0.1106 | 0.1219 | 537 | 558 | 0.2202 | test |
+| D - Elevated | 348 | 0.2074 | 0.2500 | 512 | 537 | 0.1583 | test |
+| E - High | 269 | 0.4515 | 0.4387 | 428 | 512 | 0.1224 | test |
+| A - Very Low | 215 | 0.0246 | 0.0465 | 579 | 631 | 0.2491 | recent |
+| B - Low | 198 | 0.0564 | 0.0556 | 558 | 579 | 0.2294 | recent |
+| C - Moderate | 182 | 0.1125 | 0.1538 | 537 | 557 | 0.2109 | recent |
+| D - Elevated | 159 | 0.2167 | 0.2893 | 512 | 537 | 0.1842 | recent |
+| E - High | 109 | 0.4597 | 0.3945 | 456 | 512 | 0.1263 | recent |
 
 ### Calibration (equal-frequency PD bins)
 
@@ -86,41 +86,41 @@ Test window:
 
 | bin | n | mean_pd | observed_rate | bads |
 |---|---|---|---|---|
-| 0 | 220 | 0.0136 | 0.0136 | 3 |
-| 1 | 220 | 0.0256 | 0.0273 | 6 |
-| 2 | 220 | 0.0377 | 0.0409 | 9 |
-| 3 | 219 | 0.0511 | 0.0639 | 14 |
-| 4 | 220 | 0.0693 | 0.0955 | 21 |
-| 5 | 220 | 0.0922 | 0.1227 | 27 |
-| 6 | 219 | 0.1229 | 0.1233 | 27 |
-| 7 | 220 | 0.1680 | 0.1955 | 43 |
-| 8 | 220 | 0.2599 | 0.2727 | 60 |
-| 9 | 220 | 0.4815 | 0.4818 | 106 |
+| 0 | 220 | 0.0138 | 0.0136 | 3 |
+| 1 | 220 | 0.0260 | 0.0273 | 6 |
+| 2 | 220 | 0.0380 | 0.0364 | 8 |
+| 3 | 219 | 0.0512 | 0.0868 | 19 |
+| 4 | 220 | 0.0695 | 0.0773 | 17 |
+| 5 | 220 | 0.0919 | 0.1227 | 27 |
+| 6 | 219 | 0.1228 | 0.1233 | 27 |
+| 7 | 220 | 0.1676 | 0.2045 | 45 |
+| 8 | 220 | 0.2605 | 0.2818 | 62 |
+| 9 | 220 | 0.4804 | 0.4682 | 103 |
 
-Calibration-in-the-large (mean PD / observed bad rate): train 1.000, validation 1.002, test 0.920, recent 0.876. Values below 1 mean the model under-predicts default in that period.
+Calibration-in-the-large (mean PD / observed bad rate): train 1.000, validation 0.996, test 0.917, recent 0.880. Values below 1 mean the model under-predicts default in that period.
 
 ### Confusion matrix at the reference threshold (test)
 
 | | Predicted bad | Predicted good |
 |---|---|---|
-| **Actual bad** | 157 (TP) | 159 (FN) |
-| **Actual good** | 256 (FP) | 1,626 (TN) |
+| **Actual bad** | 159 (TP) | 158 (FN) |
+| **Actual good** | 261 (FP) | 1,620 (TN) |
 
-Precision 0.380, recall/sensitivity 0.497, specificity 0.864, F1 0.431.
+Precision 0.379, recall/sensitivity 0.502, specificity 0.861, F1 0.431.
 
 ### Threshold analysis (test)
 
 | threshold | precision | recall | specificity | f1 | flagged_rate | approval_rate | bad_rate_approved |
 |---|---|---|---|---|---|---|---|
-| 0.0500 | 0.2025 | 0.9272 | 0.3868 | 0.3324 | 0.6583 | 0.3417 | 0.0306 |
-| 0.0800 | 0.2372 | 0.8323 | 0.5505 | 0.3691 | 0.5045 | 0.4955 | 0.0487 |
-| 0.1000 | 0.2616 | 0.7658 | 0.6371 | 0.3900 | 0.4208 | 0.5792 | 0.0581 |
-| 0.1200 | 0.2893 | 0.7215 | 0.7024 | 0.4130 | 0.3585 | 0.6415 | 0.0624 |
-| 0.1500 | 0.3291 | 0.6487 | 0.7779 | 0.4366 | 0.2834 | 0.7166 | 0.0705 |
-| 0.2000 | 0.3756 | 0.5253 | 0.8533 | 0.4380 | 0.2011 | 0.7989 | 0.0854 |
-| 0.2500 | 0.3929 | 0.4177 | 0.8916 | 0.4049 | 0.1529 | 0.8471 | 0.0988 |
-| 0.3000 | 0.4403 | 0.3734 | 0.9203 | 0.4041 | 0.1219 | 0.8781 | 0.1026 |
-| 0.4000 | 0.5000 | 0.2468 | 0.9586 | 0.3305 | 0.0710 | 0.9290 | 0.1166 |
+| 0.0500 | 0.2042 | 0.9306 | 0.3886 | 0.3348 | 0.6574 | 0.3426 | 0.0292 |
+| 0.0800 | 0.2398 | 0.8328 | 0.5550 | 0.3724 | 0.5009 | 0.4991 | 0.0483 |
+| 0.1000 | 0.2652 | 0.7729 | 0.6390 | 0.3948 | 0.4204 | 0.5796 | 0.0565 |
+| 0.1200 | 0.2901 | 0.7192 | 0.7033 | 0.4134 | 0.3576 | 0.6424 | 0.0630 |
+| 0.1500 | 0.3323 | 0.6467 | 0.7810 | 0.4390 | 0.2807 | 0.7193 | 0.0708 |
+| 0.2000 | 0.3736 | 0.5174 | 0.8538 | 0.4339 | 0.1997 | 0.8003 | 0.0870 |
+| 0.2500 | 0.3929 | 0.4164 | 0.8915 | 0.4043 | 0.1529 | 0.8471 | 0.0994 |
+| 0.3000 | 0.4387 | 0.3722 | 0.9197 | 0.4027 | 0.1224 | 0.8776 | 0.1032 |
+| 0.4000 | 0.4935 | 0.2397 | 0.9585 | 0.3227 | 0.0701 | 0.9299 | 0.1179 |
 
 ## 5. Explainability
 
@@ -128,79 +128,79 @@ Precision 0.380, recall/sensitivity 0.497, specificity 0.864, F1 0.431.
 
 | feature | group | auc_drop_mean | auc_drop_std |
 |---|---|---|---|
-| income_proxy_monthly | transaction_behaviour | 0.1514 | 0.0170 |
-| collections_last_90d | collections | 0.1240 | 0.0133 |
-| total_disbursed | loan_history | 0.0433 | 0.0090 |
-| loan_amount | application | 0.0397 | 0.0090 |
-| income_volatility_180d | stability | 0.0268 | 0.0056 |
-| product_type | application | 0.0240 | 0.0016 |
-| average_transaction_amount_90d | transaction_behaviour | 0.0221 | 0.0081 |
-| bureau_previous_defaults | borrower_profile | 0.0218 | 0.0021 |
-| collections_last_30d | collections | 0.0120 | 0.0033 |
-| late_payment_ratio | repayment_behaviour | 0.0120 | 0.0014 |
-| income_stability_180d | stability | 0.0113 | 0.0028 |
-| interest_rate | application | 0.0113 | 0.0022 |
-| average_days_to_repay | repayment_behaviour | 0.0085 | 0.0015 |
-| median_days_to_repay | repayment_behaviour | 0.0079 | 0.0017 |
-| employment_status | borrower_profile | 0.0072 | 0.0031 |
+| income_proxy_monthly | transaction_behaviour | 0.1338 | 0.0171 |
+| collections_last_90d | collections | 0.1158 | 0.0124 |
+| loan_amount | application | 0.0415 | 0.0097 |
+| product_type | application | 0.0260 | 0.0019 |
+| average_transaction_amount_90d | transaction_behaviour | 0.0248 | 0.0094 |
+| bureau_previous_defaults | borrower_profile | 0.0221 | 0.0020 |
+| collections_last_30d | collections | 0.0141 | 0.0038 |
+| income_volatility_180d | stability | 0.0138 | 0.0037 |
+| average_days_to_repay | repayment_behaviour | 0.0128 | 0.0031 |
+| partial_payment_ratio | repayment_behaviour | 0.0122 | 0.0017 |
+| interest_rate | application | 0.0118 | 0.0026 |
+| largest_loan | loan_history | 0.0105 | 0.0048 |
+| days_since_last_repayment | recency | 0.0104 | 0.0020 |
+| amount_to_largest_prior | application | 0.0102 | 0.0014 |
+| average_loan_amount | loan_history | 0.0100 | 0.0014 |
 
 ### Logistic regression - largest standardised coefficients
 
 | term | coefficient | odds_ratio_per_sd |
 |---|---|---|
-| skewed__collections_last_90d | -0.9727 | 0.3781 |
-| skewed__income_proxy_monthly | -0.9112 | 0.4020 |
-| categorical__product_type_emergency_loan | -0.7300 | 0.4819 |
-| categorical__employment_status_salaried | -0.5633 | 0.5693 |
-| skewed__total_disbursed | -0.5158 | 0.5970 |
-| categorical__product_type_micro_loan | -0.4650 | 0.6281 |
-| skewed__loan_amount | -0.4581 | 0.6325 |
-| skewed__average_transaction_amount_90d | 0.4424 | 1.5564 |
-| categorical__product_type_sme_working_capital | 0.4098 | 1.5065 |
-| numeric__bureau_previous_defaults | 0.3476 | 1.4156 |
-| categorical__employment_status_self_employed | -0.3405 | 0.7114 |
-| numeric__income_volatility_180d | 0.3390 | 1.4035 |
-| numeric__income_stability_180d | 0.2813 | 1.3248 |
-| skewed__collections_last_30d | 0.2733 | 1.3142 |
-| numeric__interest_rate | 0.2716 | 1.3121 |
+| skewed__collections_last_90d | -0.9202 | 0.3984 |
+| skewed__income_proxy_monthly | -0.8367 | 0.4332 |
+| categorical__product_type_emergency_loan | -0.8057 | 0.4468 |
+| categorical__employment_status_salaried | -0.6145 | 0.5409 |
+| categorical__product_type_micro_loan | -0.5185 | 0.5954 |
+| skewed__average_transaction_amount_90d | 0.4983 | 1.6460 |
+| skewed__loan_amount | -0.4649 | 0.6282 |
+| categorical__employment_status_self_employed | -0.3804 | 0.6836 |
+| categorical__product_type_sme_working_capital | 0.3774 | 1.4585 |
+| numeric__bureau_previous_defaults | 0.3488 | 1.4174 |
+| skewed__collections_last_30d | 0.3121 | 1.3663 |
+| numeric__interest_rate | 0.2829 | 1.3270 |
+| numeric__borrowing_frequency_90d | -0.2534 | 0.7762 |
+| numeric__missingindicator_days_since_last_loan | -0.2360 | 0.7897 |
+| numeric__missingindicator_partial_payment_ratio | -0.2360 | 0.7897 |
 
 ### Individual explanations (baseline substitution, champion)
 
 `pd_contribution` = PD(actual) - PD(with the feature set to the training
 median/mode). Positive values increase predicted risk.
 
-**High Risk** — loan `L0014510`, predicted PD 57.9%, actual outcome: good
+**High Risk** — loan `L0004362`, predicted PD 57.2%, actual outcome: bad (30+ DPD)
 
 | feature | value | reference | pd_contribution |
 |---|---|---|---|
-| income_proxy_monthly | 1610.6466666666668 | 28195.993333333332 | +0.5070 |
-| income_volatility_180d | 1.1032636260871396 | 0.29180733242233803 | +0.2477 |
-| income_stability_180d | 0.0 | 0.708192667577662 | -0.1767 |
-| loan_amount | 1000.0 | 7300.0 | +0.1727 |
-| average_transaction_amount_90d | 1917.0566666666666 | 7284.062222222222 | -0.1676 |
-| transaction_volume_90d | 11502.34 | 165504.93 | -0.1320 |
+| income_proxy_monthly | 5286.553333333334 | 28188.57666666667 | +0.3647 |
+| loan_amount | 500.0 | 7300.0 | +0.2324 |
+| average_transaction_amount_90d | 1439.8276190476192 | 7283.853333333333 | -0.2193 |
+| employment_status | unemployed | salaried | +0.1625 |
+| collections_last_90d | 209.60000000000002 | 5275.67 | +0.1556 |
+| largest_loan | 200.0 | 11800.0 | -0.1532 |
 
-**Median Risk** — loan `L0011435`, predicted PD 8.1%, actual outcome: good
-
-| feature | value | reference | pd_contribution |
-|---|---|---|---|
-| collections_last_90d | 0.0 | 5275.67 | +0.0659 |
-| total_disbursed | 0.0 | 5300.0 | +0.0469 |
-| collections_last_30d | 0.0 | 2045.67 | -0.0406 |
-| average_days_to_repay |  | 20.0 | -0.0348 |
-| median_days_to_repay |  | 19.0 | -0.0348 |
-| late_payment_ratio |  | 0.0 | -0.0348 |
-
-**Low Risk** — loan `L0009942`, predicted PD 1.0%, actual outcome: good
+**Median Risk** — loan `L0007817`, predicted PD 8.0%, actual outcome: good
 
 | feature | value | reference | pd_contribution |
 |---|---|---|---|
-| borrowing_frequency_90d | 4.0 | 1.0 | -0.0091 |
-| collections_last_90d | 111940.0 | 5275.67 | -0.0089 |
-| income_proxy_monthly | 49866.503333333334 | 28195.993333333332 | -0.0084 |
-| loan_amount | 24000.0 | 7300.0 | -0.0053 |
-| total_disbursed | 182900.0 | 5300.0 | -0.0047 |
-| income_volatility_180d | 0.11373569193490708 | 0.29180733242233803 | -0.0028 |
+| collections_last_90d | 0.0 | 5275.67 | +0.0640 |
+| collections_last_30d | 0.0 | 2045.67 | -0.0473 |
+| average_loan_amount |  | 8850.0 | -0.0448 |
+| days_since_last_loan |  | 31.0 | -0.0448 |
+| partial_payment_ratio |  | 0.1 | -0.0448 |
+| amount_to_largest_prior |  | 0.9259259259259259 | -0.0448 |
+
+**Low Risk** — loan `L0006662`, predicted PD 1.1%, actual outcome: good
+
+| feature | value | reference | pd_contribution |
+|---|---|---|---|
+| income_proxy_monthly | 89329.09666666666 | 28188.57666666667 | -0.0213 |
+| loan_amount | 102500.0 | 7300.0 | -0.0137 |
+| collections_last_90d | 172504.22 | 5275.67 | -0.0101 |
+| interest_rate | 0.06 | 0.1 | -0.0078 |
+| product_type | sme_working_capital | micro_loan | +0.0063 |
+| borrowing_frequency_90d | 3.0 | 1.0 | -0.0055 |
 
 ## 6. Responsible-modeling review (test window)
 
@@ -209,24 +209,24 @@ for proxy effects. `flagged_rate` is the share at or above the reference thresho
 
 | attribute | group | n | bad_rate | mean_pd | calibration_ratio | roc_auc | flagged_rate | tpr | fpr | flagged_rate_ratio | small_sample |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| gender | female | 989 | 0.1355 | 0.1304 | 0.9624 | 0.7714 | 0.1921 | 0.4851 | 0.1462 | 1.0224 | False |
-| gender | male | 1,156 | 0.1557 | 0.1350 | 0.8669 | 0.7924 | 0.1886 | 0.5056 | 0.1301 | 1.0036 | False |
-| gender | undisclosed | 53 | 0.0377 | 0.1059 | 2.8065 | 0.7647 | 0.0943 | 0.5000 | 0.0784 | 0.5021 | False |
-| age_band | 18-24 | 233 | 0.2318 | 0.2206 | 0.9520 | 0.7347 | 0.4163 | 0.6852 | 0.3352 | 2.2156 | False |
-| age_band | 25-34 | 897 | 0.1661 | 0.1254 | 0.7548 | 0.7754 | 0.1639 | 0.4564 | 0.1056 | 0.8722 | False |
-| age_band | 35-44 | 661 | 0.1210 | 0.1188 | 0.9815 | 0.8115 | 0.1604 | 0.4625 | 0.1188 | 0.8535 | False |
-| age_band | 45-54 | 305 | 0.0820 | 0.1289 | 1.5722 | 0.7563 | 0.1803 | 0.5600 | 0.1464 | 0.9597 | False |
-| age_band | 55+ | 102 | 0.0784 | 0.0874 | 1.1149 | 0.7779 | 0.0784 | 0.1250 | 0.0745 | 0.4174 | False |
-| region | Central | 469 | 0.1279 | 0.1231 | 0.9622 | 0.7570 | 0.1684 | 0.4333 | 0.1296 | 0.8965 | False |
-| region | Coastal | 259 | 0.1815 | 0.1504 | 0.8286 | 0.7591 | 0.2317 | 0.5319 | 0.1651 | 1.2329 | False |
-| region | Highlands | 300 | 0.1267 | 0.1260 | 0.9950 | 0.7880 | 0.1767 | 0.5526 | 0.1221 | 0.9402 | False |
-| region | Lakeside | 306 | 0.1307 | 0.1327 | 1.0154 | 0.7840 | 0.1732 | 0.4750 | 0.1278 | 0.9218 | False |
-| region | Metro | 683 | 0.1391 | 0.1252 | 0.9003 | 0.8002 | 0.1757 | 0.4737 | 0.1276 | 0.9351 | False |
-| region | Northern | 181 | 0.1989 | 0.1657 | 0.8331 | 0.7874 | 0.2652 | 0.5833 | 0.1862 | 1.4114 | False |
+| gender | female | 989 | 0.1355 | 0.1304 | 0.9621 | 0.7719 | 0.1951 | 0.4925 | 0.1485 | 1.0213 | False |
+| gender | male | 1,156 | 0.1566 | 0.1350 | 0.8622 | 0.7923 | 0.1920 | 0.5083 | 0.1333 | 1.0050 | False |
+| gender | undisclosed | 53 | 0.0377 | 0.1060 | 2.8082 | 0.7647 | 0.0943 | 0.5000 | 0.0784 | 0.4937 | False |
+| age_band | 18-24 | 233 | 0.2275 | 0.2202 | 0.9681 | 0.7468 | 0.4163 | 0.6981 | 0.3333 | 2.1787 | False |
+| age_band | 25-34 | 897 | 0.1672 | 0.1253 | 0.7491 | 0.7758 | 0.1695 | 0.4667 | 0.1098 | 0.8868 | False |
+| age_band | 35-44 | 661 | 0.1210 | 0.1188 | 0.9816 | 0.8122 | 0.1604 | 0.4625 | 0.1188 | 0.8392 | False |
+| age_band | 45-54 | 305 | 0.0852 | 0.1295 | 1.5191 | 0.7395 | 0.1869 | 0.5385 | 0.1541 | 0.9780 | False |
+| age_band | 55+ | 102 | 0.0784 | 0.0872 | 1.1117 | 0.7726 | 0.0784 | 0.1250 | 0.0745 | 0.4105 | False |
+| region | Central | 469 | 0.1279 | 0.1232 | 0.9634 | 0.7625 | 0.1748 | 0.4667 | 0.1320 | 0.9150 | False |
+| region | Coastal | 259 | 0.1815 | 0.1511 | 0.8328 | 0.7573 | 0.2355 | 0.5319 | 0.1698 | 1.2326 | False |
+| region | Highlands | 300 | 0.1333 | 0.1262 | 0.9465 | 0.7751 | 0.1767 | 0.5250 | 0.1231 | 0.9246 | False |
+| region | Lakeside | 306 | 0.1307 | 0.1322 | 1.0113 | 0.7846 | 0.1732 | 0.4750 | 0.1278 | 0.9064 | False |
+| region | Metro | 683 | 0.1391 | 0.1251 | 0.8996 | 0.7979 | 0.1801 | 0.4737 | 0.1327 | 0.9425 | False |
+| region | Northern | 181 | 0.1934 | 0.1650 | 0.8535 | 0.8057 | 0.2652 | 0.6000 | 0.1849 | 1.3878 | False |
 
 ## 7. Conclusions (derived from the numbers above)
 
-- Logistic Regression ROC-AUC ranges 0.765-0.786 across train/validation/test/recent (spread 0.021).
-- Over-fitting: Hist Gradient Boosting (train-validation gap 0.084), Random Forest (train-validation gap 0.083). Higher training fit did not translate into better out-of-time ranking.
+- Logistic Regression ROC-AUC ranges 0.764-0.785 across train/validation/test/recent (spread 0.021).
+- Over-fitting: Hist Gradient Boosting (train-validation gap 0.089), Random Forest (train-validation gap 0.087). Higher training fit did not translate into better out-of-time ranking.
 - The champion under-predicts default in the most recent matured window (mean PD / bad rate = 0.88). Rank-ordering is retained, so the proportionate response is recalibration on recent matured outcomes rather than redevelopment (see reports/monitoring_report.md).
 - All figures come from synthetic data and illustrate the validation process; they are not evidence of real-world predictive power.

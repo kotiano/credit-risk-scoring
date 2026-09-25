@@ -6,7 +6,7 @@
 
 - **Overall status:** WARN (clean layer: **PASS**)
 - **Checks evaluated:** 36 — PASS: 21, WARN: 15
-- **Record retention (clean / raw rows):** 99.7903%
+- **Record retention (clean / raw rows):** 99.7899%
 
 Status semantics: `PASS` = no failing records; `WARN (handled)` = defects found in
 the source extract within tolerance and quarantined/flagged by the clean layer;
@@ -18,8 +18,8 @@ the source extract within tolerance and quarantined/flagged by the clean layer;
 |---|---|---|---|---|---|---|---|---|---|
 | borrowers | 5,006 | 11 | 0.136% | 0.120% | 75 | 8 | 0 | 5,000 | WARN |
 | loans | 15,129 | 11 | 0.000% | 0.026% | 7 | 0 | 0 | 15,120 | WARN |
-| repayments | 21,201 | 7 | 0.000% | 0.443% | 12 | 0 | 12 | 21,078 | WARN |
-| transactions | 793,570 | 7 | 0.000% | 0.199% | 30 | 9 | 0 | 791,957 | WARN |
+| repayments | 21,203 | 7 | 0.000% | 0.448% | 12 | 0 | 13 | 21,078 | WARN |
+| transactions | 793,571 | 7 | 0.000% | 0.200% | 30 | 7 | 0 | 791,957 | WARN |
 
 ## Source-extract checks
 
@@ -36,16 +36,16 @@ the source extract within tolerance and quarantined/flagged by the clean layer;
 | loans | interest_rate_out_of_range | validity | 0 | 15,125 | 0.0000% | PASS | Loan quarantined in clean.rejected_loans |
 | loans | total_due_not_reconciled | consistency | 2 | 15,125 | 0.0132% | WARN (handled) | Loan quarantined in clean.rejected_loans |
 | loans | loan_unknown_borrower | referential_integrity | 0 | 15,125 | 0.0000% | PASS |  |
-| repayments | duplicate_repayments | uniqueness | 94 | 21,201 | 0.4434% | WARN (handled) | Collapsed to one row per transaction_reference |
-| repayments | repayment_orphan_loan | referential_integrity | 12 | 21,107 | 0.0569% | WARN (handled) | Quarantined in clean.rejected_repayments |
-| repayments | repayment_amount_not_positive | validity | 6 | 21,107 | 0.0284% | WARN (handled) | Quarantined in clean.rejected_repayments |
-| repayments | repayment_before_disbursement | validity | 6 | 21,107 | 0.0284% | WARN (handled) | Quarantined in clean.rejected_repayments |
-| repayments | repayment_borrower_mismatch | consistency | 0 | 21,107 | 0.0000% | PASS | Quarantined in clean.rejected_repayments |
-| transactions | duplicate_transactions | uniqueness | 1,583 | 793,570 | 0.1995% | WARN (handled) | Collapsed to one row per transaction_id |
+| repayments | duplicate_repayments | uniqueness | 95 | 21,203 | 0.4480% | WARN (handled) | Collapsed to one row per transaction_reference |
+| repayments | repayment_orphan_loan | referential_integrity | 13 | 21,108 | 0.0616% | WARN (handled) | Quarantined in clean.rejected_repayments |
+| repayments | repayment_amount_not_positive | validity | 6 | 21,108 | 0.0284% | WARN (handled) | Quarantined in clean.rejected_repayments |
+| repayments | repayment_before_disbursement | validity | 6 | 21,108 | 0.0284% | WARN (handled) | Quarantined in clean.rejected_repayments |
+| repayments | repayment_borrower_mismatch | consistency | 0 | 21,108 | 0.0000% | PASS | Quarantined in clean.rejected_repayments |
+| transactions | duplicate_transactions | uniqueness | 1,584 | 793,571 | 0.1996% | WARN (handled) | Collapsed to one row per transaction_id |
 | transactions | transaction_amount_missing | completeness | 20 | 791,987 | 0.0025% | WARN (handled) | Quarantined in clean.rejected_transactions |
 | transactions | transaction_future_dated | validity | 10 | 791,987 | 0.0013% | WARN (handled) | Quarantined in clean.rejected_transactions |
 | transactions | transaction_unknown_borrower | referential_integrity | 0 | 791,987 | 0.0000% | PASS |  |
-| transactions | transaction_amount_outliers | outlier | 9 | 791,987 | 0.0011% | WARN (handled) | Retained and flagged; features use windowed aggregates |
+| transactions | transaction_amount_outliers | outlier | 7 | 791,987 | 0.0009% | WARN (handled) | Retained and flagged; features use windowed aggregates |
 
 ## Clean-layer invariants (zero tolerance)
 
@@ -73,7 +73,7 @@ the source extract within tolerance and quarantined/flagged by the clean layer;
 |---|---|---|
 | loans | due_before_disbursement | 3 |
 | loans | non_positive_amount, total_due_not_reconciled | 2 |
-| repayments | orphan_loan_id | 12 |
+| repayments | orphan_loan_id | 13 |
 | repayments | non_positive_amount | 6 |
 | repayments | parent_loan_quarantined | 5 |
 | repayments | before_disbursement | 5 |

@@ -60,9 +60,14 @@ def select_champion(val_auc: dict[str, float], margin: float) -> tuple[str, str]
             f"{challenger} improves validation ROC-AUC by {uplift:.4f} (> {margin:.2f} "
             "parsimony margin) over the logistic baseline."
         )
+    comparison = (
+        f"trails the logistic baseline by {-uplift:.4f}"
+        if uplift <= 0
+        else f"beats the logistic baseline by only {uplift:.4f}"
+    )
     return baseline, (
-        f"Best challenger ({challenger}) improves validation ROC-AUC by only {uplift:+.4f} "
-        f"(<= {margin:.2f} parsimony margin); the interpretable logistic baseline is kept."
+        f"Best challenger ({challenger}) {comparison} validation ROC-AUC "
+        f"(parsimony margin {margin:.2f}); the interpretable logistic baseline is kept."
     )
 
 
@@ -76,7 +81,9 @@ def train_models(con: duckdb.DuckDBPyConnection, settings: Settings) -> Training
     X_train, y_train = feature_frame(train), train["target"].astype(int)  # noqa: N806
     X_valid, y_valid = feature_frame(valid), valid["target"].astype(int)  # noqa: N806
 
-    tuning_rows, best_models, best_auc = [], {}, {}
+    tuning_rows: list[dict[str, Any]] = []
+    best_models: dict[str, Pipeline] = {}
+    best_auc: dict[str, float] = {}
     for candidate in CANDIDATES:
         for params in candidate.configurations():
             pipe = candidate.build(params, cfg.random_state)

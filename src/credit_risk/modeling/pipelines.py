@@ -33,7 +33,7 @@ from credit_risk.features.registry import (
 )
 
 
-class Winsorizer(BaseEstimator, TransformerMixin):  # type: ignore[misc]
+class Winsorizer(BaseEstimator, TransformerMixin):
     """Clip each column to quantiles learned on the training data."""
 
     def __init__(self, lower: float = 0.01, upper: float = 0.99) -> None:

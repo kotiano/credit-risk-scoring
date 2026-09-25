@@ -54,6 +54,9 @@ dashboard:  ## Launch the Streamlit dashboard (after `make all`)
 
 notebooks:  ## Re-execute the storytelling notebooks in place
 	$(BIN)/python scripts/build_notebooks.py
+	$(BIN)/ruff format -q notebooks
+	$(BIN)/ruff check --fix -q notebooks
+	$(BIN)/ruff format -q notebooks
 
 test:  ## Run the test suite
 	$(BIN)/pytest
